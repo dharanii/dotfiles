@@ -152,8 +152,8 @@ fi
 
 
 
-export PS1
-PS1="\w \[$(tput setaf 6)\]ily \[$(tput sgr0)\]"
+# export PS1
+# PS1="\w \[$(tput setaf 6)\]ily \[$(tput sgr0)\]"
 
 PATH="${PATH}:${HOME}/bin"
 
@@ -161,5 +161,8 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 export EDITOR="vim"
 
 source "${HOME}/.cache/wal/colors.sh"
+
+[[ -z "$DISPLAY" && "$XDG_VTNR" -eq 1 ]] && \
+    exec startx -- vt1 &> /dev/null
 
 (wal -r"${VTE_VERSION:+"t"}" &)

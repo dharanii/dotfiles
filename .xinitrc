@@ -59,4 +59,4 @@ wal -R -o wal-set
 
 xscreensaver &
 xsetroot -cursor_name left_ptr &
-exec openbox-session
+exec openbox
