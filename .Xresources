@@ -1,8 +1,7 @@
 ! Dylans Xresources
 
-! Desktop/Laptop Settings.
-! URxvt*font: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
-! URxvt*boldFont: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
+URxvt*font: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
+URxvt*boldFont: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
 
 Xft.dpi: 96
 

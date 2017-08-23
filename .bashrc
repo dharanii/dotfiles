@@ -150,4 +150,16 @@ if [ -d "$HOME/.linuxbrew" ]; then
     export LD_LIBRARY_PATH=$HOME/.linuxbrew/lib
 fi
 
-(wal -r &)
+
+
+export PS1
+PS1="\w \[$(tput setaf 6)\]ily \[$(tput sgr0)\]"
+
+PATH="${PATH}:${HOME}/bin"
+
+export XDG_CONFIG_HOME="${HOME}/.config"
+export EDITOR="vim"
+
+source "${HOME}/.cache/wal/colors.sh"
+
+(wal -r"${VTE_VERSION:+"t"}" &)

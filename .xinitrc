@@ -54,11 +54,9 @@ fi
 # xterm -geometry 80x20+494-0 &
 # exec xterm -geometry 80x66+0+0 -name login
 
-wal -R
+xrdb --merge "${HOME}/.Xresources"
+wal -R -o wal-set
 
 xscreensaver &
 xsetroot -cursor_name left_ptr &
 exec openbox-session
-
-A
-
