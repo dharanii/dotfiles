@@ -5,17 +5,19 @@ set -e
 yaourt -Syua
 
 sudo pacman -S --noconfirm \
-  xor-server xorg-xinit \
+  xorg-server xorg-xinit \
   openbox gtk-engine-murrine \
   imagemagick feh \
-  xorg-randr wmctrl xdotool \
+  xorg-xrandr wmctrl xdotool \
   rxvt-unicode \
   firefox firefox-i18n-ja \
   vim
 
 yaourt -S \
+  python-pywal \
   openbox-patched \
-  lemonbar phallus-fonts-git siji-git
+  lemonbar \
+  phallus-fonts-git siji-git
 
 mkdir -p "${HOME}/.theme"
 git clone --depth 1 https://github.com/dylanaraps/Flatabulous-wal.git "${HOME}/.theme/Flatabulous-wal"
@@ -26,3 +28,4 @@ wget https://wallpaperscraft.com/image/graffiti_wall_city_colorful_62146_3840x21
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
+wal -i "${HOME}/.wallpaper"

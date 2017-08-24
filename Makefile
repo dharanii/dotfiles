@@ -11,3 +11,10 @@ deploy:
 init:
 		# @$(foreach val, $(wildcard ./etc/init/*.sh), bash $(val);)
 		sh init
+
+.PHONY: update
+update:
+		git pull origin master
+
+.PHONY: install
+install: update deploy init

@@ -3,5 +3,5 @@
 [alias]
   graph = log --graph --oneline --decorate=full
 [user]
-	name = dharanii
-	email = c1h41241v11@gmail.com
+  name = dharanii
+  email = c1h41241v11@gmail.com
