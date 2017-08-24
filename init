@@ -19,8 +19,8 @@ yaourt -S \
   lemonbar \
   phallus-fonts-git siji-git
 
-mkdir -p "${HOME}/.theme"
-git clone --depth 1 https://github.com/dylanaraps/Flatabulous-wal.git "${HOME}/.theme/Flatabulous-wal"
+mkdir -p "${HOME}/.themes"
+git clone --depth 1 https://github.com/dylanaraps/Flatabulous-wal.git "${HOME}/.themes/Flatabulous-wal"
 
 mkdir -p "${HOME}/.wallpaper"
 wget https://wallpaperscraft.com/image/graffiti_wall_city_colorful_62146_3840x2160.jpg -O "${HOME}/.wallpaper/graffiti.jpg"
