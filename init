@@ -17,7 +17,7 @@ yaourt -S \
   python-pywal \
   openbox-patched \
   lemonbar \
-  phallus-fonts-git siji-git
+  phallus-fonts-git siji-git otf-hermit
 
 mkdir -p "${HOME}/.themes"
 git clone --depth 1 https://github.com/dylanaraps/Flatabulous-wal.git "${HOME}/.themes/Flatabulous-wal"
