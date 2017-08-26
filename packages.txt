@@ -13,6 +13,7 @@ intel-ucode
 lemonbar
 networkmanager
 openbox-patched
+otf-hermit
 phallus-fonts-git
 python-pywal
 python-setuptools
