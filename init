@@ -6,7 +6,7 @@ yaourt -Syua
 
 sudo pacman -S --noconfirm \
   xorg-server xorg-xinit \
-  openbox gtk-engine-murrine \
+  gtk-engine-murrine \
   imagemagick feh python-setuptools \
   xorg-xrandr wmctrl xdotool dash alsa-utils \
   rofi \
