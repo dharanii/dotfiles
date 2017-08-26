@@ -25,3 +25,6 @@ install: update deploy init
 backup:
 		comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) > ./packages.txt
 
+.PHONY: restore
+restore:
+		yaourt -S --needed --noconfirm `cat packages.txt`

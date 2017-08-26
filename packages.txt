@@ -14,7 +14,6 @@ lemonbar
 networkmanager
 openbox-patched
 phallus-fonts-git
-python2
 python-pywal
 python-setuptools
 rofi
@@ -25,7 +24,6 @@ wmctrl
 xdotool
 xf86-video-intel
 xorg-server
-xorg-xdpyinfo
 xorg-xinit
 xorg-xrandr
 yaourt
