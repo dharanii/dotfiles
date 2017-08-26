@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 DOTPATH    := $(PWD)
 CANDIDATES := $(wildcard .??*) bin
 EXCLUSIONS := .DS_Store .git
@@ -18,3 +20,8 @@ update:
 
 .PHONY: install
 install: update deploy init
+
+.PHONY: backup
+backup:
+		comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) > ./packages.txt
+
