@@ -9,6 +9,7 @@ sudo pacman -S --noconfirm \
   openbox gtk-engine-murrine \
   imagemagick feh python-setuptools \
   xorg-xrandr wmctrl xdotool dash alsa-utils \
+  rofi \
   rxvt-unicode \
   firefox firefox-i18n-ja \
   vim
