@@ -7,14 +7,13 @@ yaourt -Syua
 sudo pacman -S --noconfirm \
   xorg-server xorg-xinit \
   openbox gtk-engine-murrine \
-  imagemagick feh \
-  python-setuptools dash \
-  xorg-xrandr wmctrl xdotool \
+  imagemagick feh python-setuptools \
+  xorg-xrandr wmctrl xdotool dash alsa-utils \
   rxvt-unicode \
   firefox firefox-i18n-ja \
   vim
 
-yaourt -S \
+yaourt -S --noconfirm\
   python-pywal \
   openbox-patched \
   lemonbar \
