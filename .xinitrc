@@ -3,6 +3,8 @@
 export DUNST_FONT='Artwiz Lemon 7'
 export DUNST_SIZE='300x30-40+70'
 
+compton --config /dev/null &
+
 xscreensaver &
 xsetroot -cursor_name left_ptr &
 
