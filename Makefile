@@ -36,7 +36,7 @@ install: update deploy init
 .PHONY: backup
 backup:
 	comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) \
-		| grep -vx "`cat packages_ignore`" > packages
+		| grep -vx "`cat packages_ignore`" | tee packages
 
 .PHONY: restore
 restore:
