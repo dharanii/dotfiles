@@ -40,7 +40,7 @@ set_scss() {
 
 main() {
     reload_openbox &
-    # reload_dunst &
+    reload_dunst &
     reload_bar &
     # set_scss &
 }
