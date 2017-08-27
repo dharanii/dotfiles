@@ -12,7 +12,19 @@ deploy:
 .PHONY: init
 init:
 		# @$(foreach val, $(wildcard ./etc/init/*.sh), bash $(val);)
-		sh init
+		yaourt -Syua --noconfirm
+		yaourt -S --needed --noconfirm `cat packages`
+		
+		mkdir -p "${HOME}/.themes"
+		git clone --depth 1 https://github.com/dylanaraps/Flatabulous-wal.git "${HOME}/.themes/Flatabulous-wal"
+		
+		mkdir -p "${HOME}/Pictures/Wallpapers"
+		curl -o "${HOME}/Pictures/Wallpapers/graffiti.jpg" https://wallpaperscraft.com/image/graffiti_wall_city_colorful_62146_3840x2160.jpg 
+		
+		curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+		  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+		
+		wal -i "${HOME}/Pictures/Wallpapers"
 
 .PHONY: update
 update:
