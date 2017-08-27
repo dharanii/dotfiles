@@ -23,8 +23,9 @@ install: update deploy init
 
 .PHONY: backup
 backup:
-		comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) > ./packages.txt
+		comm -23 <(pacman -Qeq | sort) <(pacman -Qgq base base-devel | sort) \
+			| grep -vx "`cat packages_ignore.txt`" > packages
 
 .PHONY: restore
 restore:
-		yaourt -S --needed --noconfirm `cat packages.txt`
+		yaourt -S --needed --noconfirm `cat packages`
