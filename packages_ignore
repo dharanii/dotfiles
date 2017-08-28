@@ -2,4 +2,4 @@ btrfs-progs
 openssh
 polkit
 virtualbox-guest-modules-arch
-virtualbox-guest-utils-nox
+virtualbox-guest-utils
