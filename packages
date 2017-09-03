@@ -22,6 +22,7 @@ python-setuptools
 rofi
 rxvt-unicode
 siji-git
+stack
 vim
 wmctrl
 xdotool

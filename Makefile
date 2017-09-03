@@ -25,6 +25,8 @@ init:
 		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	
 	wal -i "${HOME}/Pictures/Wallpapers"
+	
+	cd "${HOME}/.xmonad; stack setup && stack build && stack install; cd ${HOME}
 
 .PHONY: update
 update:

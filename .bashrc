@@ -156,6 +156,7 @@ fi
 # PS1="\w \[$(tput setaf 6)\]ily \[$(tput sgr0)\]"
 
 PATH="${PATH}:${HOME}/bin"
+PATH="${PATH}:${HOME}/.local/bin"
 
 export XDG_CONFIG_HOME="${HOME}/.config"
 export EDITOR="vim"
