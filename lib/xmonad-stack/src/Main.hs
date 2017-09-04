@@ -34,11 +34,11 @@ postCompile_ :: ExitCode -> IO ()
 
 compile_ force = 
     withLock ExitSuccess $ compileUsingShell $
-        "cd ./lib/xmonad-stack; " ++
+        "cd /home/vagrant/dotfiles/lib/xmonad-stack; " ++
             if force then
                 "stack clean; stack build"
             else
                 "stack build"
 
-postCompile_ ExitSuccess = void $ compileUsingShell "cd ./lib/xmonad-stack; stack install"
+postCompile_ ExitSuccess = void $ compileUsingShell "cd /home/vagrant/dotfiles/lib/xmonad-stack; stack install"
 postCompile_ exitCode    = EH.defaultPostCompile exitCode

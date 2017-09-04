@@ -26,7 +26,7 @@ init:
 	
 	wal -i "${HOME}/Pictures/Wallpapers"
 	
-	cd "${HOME}/.xmonad/lib/xmonad-stack"; stack setup && stack build && stack install; cd "${HOME}"
+	cd "${HOME}/dotfiles/lib/xmonad-stack"; stack setup && stack build && stack install; cd "${HOME}"
 
 .PHONY: update
 update:
