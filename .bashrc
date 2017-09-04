@@ -156,12 +156,10 @@ fi
 # PS1="\w \[$(tput setaf 6)\]ily \[$(tput sgr0)\]"
 
 PATH="${PATH}:${HOME}/bin"
+PATH="${PATH}:${HOME}/.local/bin"
 
 export XDG_CONFIG_HOME="${HOME}/.config"
 export EDITOR="vim"
-
-PATH="${PATH}:${HOME}/.local/bin"
-export XMONAD_CONFIG_DIR="${HOME}/dotfiles/lib/xmonad-stack"
 
 source "${HOME}/.cache/wal/colors.sh"
 
