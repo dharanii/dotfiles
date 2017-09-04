@@ -18,9 +18,11 @@ executable xmonad
   main-is:             Main.hs
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
-                     , xmonad
-                     , xmonad-contrib
-                     , xmonad-entryhelper
+                     , directory
+                     , filepath
                      , lens
                      , lens-aeson
                      , text
+                     , xmonad
+                     , xmonad-contrib
+                     , xmonad-entryhelper
