@@ -10,6 +10,8 @@ import System.Exit (ExitCode(..))
 import System.FilePath ((</>))
 import XMonad
 import XMonad.Config.Desktop (desktopConfig)
+import XMonad.Layout.Spacing (spacingWithEdge)
+import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
 import XMonad.Util.EntryHelper (withCustomHelper, Config(..), withLock, compileUsingShell)
 import qualified XMonad.Util.EntryHelper as EH
 
@@ -23,10 +25,12 @@ main = do
 
     withCustomHelper $ EH.defaultConfig
         { run = xmonad $ def
-                    { terminal = "urxvtc"
-                    , normalBorderColor = maybe def T.unpack color0
-                    , focusedBorderColor = maybe def T.unpack color1
-                    }
+            { layoutHook = spacingWithEdge 9 $ layoutHook def
+            , terminal = "urxvtc"
+            , normalBorderColor = maybe def T.unpack color0
+            , focusedBorderColor = maybe def T.unpack color1
+            , startupHook = setDefaultCursor xC_left_ptr <+> startupHook def
+            }
         , compile = compile_ 
         , postCompile = postCompile_
         }
