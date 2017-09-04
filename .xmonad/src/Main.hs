@@ -16,14 +16,14 @@ import qualified XMonad.Util.EntryHelper as EH
 main :: IO ()
 main = do
     colorsJson <- readFile "/home/vagrant/.cache/wal/colors.json"
-    let color1 = colorsJson ^? key "colors" . key "color1" . _String
-        color2 = colorsJson ^? key "colors" . key "color2" . _String
+    let color0 = colorsJson ^? key "colors" . key "color0" . _String
+        color1 = colorsJson ^? key "colors" . key "color1" . _String
 
     withCustomHelper $ EH.Config
         { run = xmonad $ def
                     { terminal = "urxvtc"
-                    , normalBorderColor = maybe def T.unpack color1
-                    , focusedBorderColor = maybe def T.unpack color2
+                    , normalBorderColor = maybe def T.unpack color0
+                    , focusedBorderColor = maybe def T.unpack color1
                     }
         , compile = compile_ 
         , postCompile = postCompile_
