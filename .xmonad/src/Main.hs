@@ -8,7 +8,7 @@ import Data.Text as T
 import System.Exit (ExitCode(..))
 import XMonad
 import XMonad.Config.Desktop (desktopConfig)
-import XMonad.Util.EntryHelper (withCustomHelper, Config(..), compileUsingShell)
+import XMonad.Util.EntryHelper (withCustomHelper, Config(..), withLock, compileUsingShell)
 import qualified XMonad.Util.EntryHelper as EH
 
 
@@ -19,7 +19,7 @@ main = do
     let color0 = colorsJson ^? key "colors" . key "color0" . _String
         color1 = colorsJson ^? key "colors" . key "color1" . _String
 
-    withCustomHelper $ EH.Config
+    withCustomHelper $ EH.defaultConfig
         { run = xmonad $ def
                     { terminal = "urxvtc"
                     , normalBorderColor = maybe def T.unpack color0
@@ -33,7 +33,7 @@ compile_ :: Bool -> IO ExitCode
 postCompile_ :: ExitCode -> IO ()
 
 compile_ force = 
-    compileUsingShell $
+    withLock ExitSuccess $ compileUsingShell $
         if force then
             "stack clean; stack build"
         else
