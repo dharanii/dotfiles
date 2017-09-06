@@ -17,7 +17,7 @@ import XMonad.Layout.Spacing (spacingWithEdge)
 import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
 import XMonad.Util.EntryHelper (withCustomHelper, Config(..), withLock, compileUsingShell)
 import qualified XMonad.Util.EntryHelper as EH
-import XMonad.Util.Loggers (date)
+import XMonad.Util.Loggers (date, logCmd)
 import XMonad.Util.Run (spawnPipe, hPutStrLn)
 
 
@@ -33,19 +33,36 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
     , ppWsSep = " "
     , ppLayout = \name ->
         maybe name T.unpack $ T.stripPrefix "SpacingWithEdge 9 " $ T.pack name 
-    , ppOrder = \(workspaces:layout:tile:[date]) -> 
+    , ppOrder = \(workspaces:layout:tile:[date,volume,inputMethod]) -> 
         let
-            icon x =
-                "%{F" ++ maybe "#F0F0F0" T.unpack color3 ++ "}" ++ x ++ "%{F}"
+            icon xs =
+                "%{F" ++ maybe "#F0F0F0" T.unpack color3 ++ "}" ++ xs ++ "%{F}"
+            tileIcon = icon "\xE0B9"
+            volumeIcon n
+              | n < 10    = icon "\xE051"
+              | n < 40    = icon "\xE053"
+              | n < 70    = icon "\xE053"
+              | otherwise = icon "\xE152"
         in
             [ "%{l}   " ++ workspaces 
                 ++ "  |  " 
-                ++ layout 
-                ++ "  |  " 
-                ++ icon "\57529" ++ " " ++ tile
-            , "%{c}" ++ date 
+                ++ tileIcon ++ " " ++ tile
+            , "%{c}" ++ date
+            , "%{r}" ++ layout 
+                ++ "  |  "
+                ++ inputMethod
+                ++ "  |  "
+                ++ volumeIcon (read volume) ++ " " ++ volume ++ "%"
+                ++ "    "
             ]
-    , ppExtras = [ date "%a %d %b - %l:%M %p" ]
+    , ppExtras = 
+        let
+            volume = 
+                logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
+            inputMethod =
+                logCmd "echo \"EN\""
+        in
+            [ date "%a %d %b - %l:%M %p", volume, inputMethod ]
     , ppOutput = hPutStrLn h
     }
 
