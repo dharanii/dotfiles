@@ -38,6 +38,8 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
             icon xs =
                 "%{F" ++ maybe "#F0F0F0" T.unpack color3 ++ "}" ++ xs ++ "%{F}"
             tileIcon = icon "\xE0B9"
+            layoutIcon = icon "\xE005"
+            inputMethodIcon = icon "\xE26F" 
             volumeIcon n
               | n < 10    = icon "\xE051"
               | n < 40    = icon "\xE053"
@@ -48,10 +50,11 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
                 ++ "  |  " 
                 ++ tileIcon ++ " " ++ tile
             , "%{c}" ++ date
-            , "%{r}" ++ layout 
+            , "%{r}" 
+                ++ layoutIcon ++ " " ++ layout 
                 ++ "  |  "
-                ++ inputMethod
-                ++ "  |  "
+                ++ inputMethodIcon ++ " " ++ inputMethod
+                ++ "  " -- ++ "  |  "
                 ++ volumeIcon (read volume) ++ " " ++ volume ++ "%"
                 ++ "    "
             ]
