@@ -17,7 +17,7 @@ import XMonad.Layout.Spacing (spacingWithEdge)
 import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
 import XMonad.Util.EntryHelper (withCustomHelper, Config(..), withLock, compileUsingShell)
 import qualified XMonad.Util.EntryHelper as EH
-import XMonad.Util.Loggers (date, logCmd)
+import XMonad.Util.Loggers (logCmd)
 import XMonad.Util.Run (spawnPipe, hPutStrLn)
 
 
@@ -60,12 +60,14 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
             ]
     , ppExtras = 
         let
+            date =
+                logCmd "date +\"%a %d %b - %l:%M %p\""
             volume = 
                 logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
             inputMethod =
                 logCmd "echo \"EN\""
         in
-            [ date "%a %d %b - %l:%M %p", volume, inputMethod ]
+            [ date, volume, inputMethod ]
     , ppOutput = hPutStrLn h
     }
 
