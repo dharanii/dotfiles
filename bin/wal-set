@@ -39,9 +39,9 @@ set_scss() {
 }
 
 main() {
-    reload_openbox &
+    # reload_openbox &
     reload_dunst &
-    reload_bar &
+    # reload_bar &
     # set_scss &
 }
 

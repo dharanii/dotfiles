@@ -27,6 +27,8 @@ vim
 wmctrl
 xdotool
 xf86-video-intel
+xmonad
+xmonad-contrib
 xorg-server
 xorg-xinit
 xorg-xrandr

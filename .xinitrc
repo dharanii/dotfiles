@@ -14,4 +14,4 @@ xrdb -merge -I$HOME ~/.Xresources
 wal -R -o wal-set
 
 # exec openbox
-exec ~/.local/bin/xmonad
+exec xmonad 
