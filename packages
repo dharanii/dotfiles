@@ -9,12 +9,10 @@ firefox
 firefox-i18n-ja
 git
 grub
-gtk-engine-murrine
 imagemagick
 intel-ucode
 lemonbar
 networkmanager
-openbox-patched
 otf-hermit
 phallus-fonts-git
 python-pywal
@@ -24,12 +22,9 @@ rxvt-unicode
 siji-git
 stack
 vim
-wmctrl
-xdotool
 xf86-video-intel
 xmonad
 xmonad-contrib
 xorg-server
 xorg-xinit
-xorg-xrandr
 yaourt
