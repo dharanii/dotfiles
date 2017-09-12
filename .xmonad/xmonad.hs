@@ -82,7 +82,7 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
 
 main :: IO ()
 main = do
-    homeDir <- return "/home/vagrant" --getHomeDirectory
+    homeDir <- getHomeDirectory
     color0  <- getWalColor  0 homeDir
     color1  <- getWalColor  1 homeDir
     color3  <- getWalColor  3 homeDir
