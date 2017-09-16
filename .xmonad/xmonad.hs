@@ -1,14 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Control.Monad (void)
 import Data.Text as T
 import System.Directory (getHomeDirectory, doesFileExist)
 import System.FilePath ((</>))
-import System.Process (readProcess)
 import XMonad
-import XMonad.Config.Desktop (desktopConfig)
-import XMonad.Hooks.DynamicLog (dynamicLogWithPP, PP(..), wrap, pad, shorten)
-import XMonad.Hooks.ManageDocks (avoidStruts, manageDocks)
+import XMonad.Hooks.DynamicLog (dynamicLogWithPP, PP(..), wrap, pad, trim, shorten)
+import XMonad.Hooks.ManageDocks (avoidStruts)
 import XMonad.Layout.Gaps (gaps, Direction2D(..))
 import XMonad.Layout.Spacing (spacingWithEdge)
 import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
@@ -49,36 +46,47 @@ getWal path = do
        return $ Nothing
     else do
         colors <- traverse getWalColor [0..15]
-        return $ Just $ Wal
-            (colors !! 0)
-            (colors !! 7)
-            (colors !! 7)
-            (colors !! 0)
-            (colors !! 1)
-            (colors !! 2)
-            (colors !! 3)
-            (colors !! 4)
-            (colors !! 5)
-            (colors !! 6)
-            (colors !! 7)
-            (colors !! 8)
-            (colors !! 9)
-            (colors !! 10)
-            (colors !! 11)
-            (colors !! 12)
-            (colors !! 13)
-            (colors !! 14)
-            (colors !! 15)
+        return $ Just $ 
+            Wal (colors !! 0)
+                (colors !! 7)
+                (colors !! 7)
+                (colors !! 0)
+                (colors !! 1)
+                (colors !! 2)
+                (colors !! 3)
+                (colors !! 4)
+                (colors !! 5)
+                (colors !! 6)
+                (colors !! 7)
+                (colors !! 8)
+                (colors !! 9)
+                (colors !! 10)
+                (colors !! 11)
+                (colors !! 12)
+                (colors !! 13)
+                (colors !! 14)
+                (colors !! 15)
     where
-        getWalColor n = T.unpack . T.strip . T.pack 
-                    <$> runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
+        getWalColor n = 
+            trim <$> runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
 
 
 barFont = "-*-lemon-*"
 barIcon = "-*-siji-*"
 barHeight = 36
 
-logHook_ h wal = dynamicLogWithPP $ def
+lemonbar wal =
+    "lemonbar"
+        ++ " -d"
+        ++ " -g x" ++ show barHeight 
+        ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
+        ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
+        ++ " -n \"bar\""
+        ++ " -f \"" ++ barFont ++ "\""
+        ++ " -f \"" ++ barIcon ++ "\""
+        ++ " | /bin/bash"
+
+logHook_ wal h = dynamicLogWithPP $ def
     { ppCurrent         = pad
     , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 wal ++ "}") "%{F}" . pad
     , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
@@ -90,8 +98,8 @@ logHook_ h wal = dynamicLogWithPP $ def
         let
             icon xs =
                 "%{F" ++ maybe "#F0F0F0" color3 wal ++ "}" ++ xs ++ "%{F}"
-            tileIcon = icon "\xE0B9"
-            layoutIcon = icon "\xE005"
+            tileIcon        = icon "\xE0B9"
+            layoutIcon      = icon "\xE005"
             inputMethodIcon = icon "\xE26F" 
             volumeIcon n
               | n < 10    = icon "\xE051"
@@ -106,9 +114,9 @@ logHook_ h wal = dynamicLogWithPP $ def
             , "%{r}" 
                 ++ layoutIcon ++ " " ++ layout 
                 ++ "  |  "
-                ++ inputMethodIcon ++ " " ++ inputMethod
-                ++ "  " -- ++ "  |  "
                 ++ volumeIcon (read volume) ++ " " ++ volume ++ "%"
+                ++ "  "
+                ++ inputMethodIcon ++ " " ++ inputMethod
                 ++ "    "
             ]
     , ppExtras = 
@@ -129,23 +137,13 @@ main = do
     home <- getHomeDirectory
     wal <- getWal $ home </> cacheWalColors
 
-    lemonbar <- spawnPipe $
-        "lemonbar"
-            ++ " -d"
-            ++ " -g x" ++ show barHeight 
-            ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
-            ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
-            ++ " -n \"bar\""
-            ++ " -f \"" ++ barFont ++ "\""
-            ++ " -f \"" ++ barIcon ++ "\""
-            ++ " | /bin/bash"
+    lemonbarHandle <- spawnPipe $ lemonbar wal
 
     xmonad $ def
-        { layoutHook = gaps [(U, barHeight)] $ spacingWithEdge 9 $ layoutHook def
-        , terminal = "urxvtc"
+        { terminal           = "urxvtc"
         , normalBorderColor  = maybe def background wal
-        , focusedBorderColor = maybe def color1 wal
-        , startupHook = setDefaultCursor xC_left_ptr <+> startupHook def
-        , logHook = logHook_ lemonbar wal 
-        --, manageHook = manageDocks <+> manageHook def
+        , focusedBorderColor = maybe def color1     wal
+        , layoutHook         = gaps [(U, barHeight)] $ spacingWithEdge 9 $ layoutHook def
+        , logHook            = logHook_ wal lemonbarHandle
+        , startupHook        = setDefaultCursor xC_left_ptr <+> startupHook def
         }
