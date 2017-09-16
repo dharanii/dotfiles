@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Text as T
+import qualified Data.Map as M
+import qualified Data.Text as T
 import System.Directory (getHomeDirectory, doesFileExist)
 import System.FilePath ((</>))
 import XMonad
@@ -137,6 +138,16 @@ lemonbarPP wal = def
     }
 
 
+keys_ :: XConfig l -> M.Map (KeyMask, KeySym) (X ())
+keys_ conf@(XConfig {modMask = modm}) =
+    M.fromList
+        [ ((modm .|. shiftMask, xK_p), spawn "rof")
+        , ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
+        , ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
+        , ((modm .|. shiftMask, xK_s), spawn "scr")
+        ]
+
+
 main :: IO ()
 main = do
     home <- getHomeDirectory
@@ -146,6 +157,7 @@ main = do
         { terminal           = "urxvtc"
         , normalBorderColor  = maybe def background wal
         , focusedBorderColor = maybe def color1     wal
+        , keys               = \conf -> M.union (keys_ conf) (keys def $ conf)
         , layoutHook         = spacingWithEdge 9 $ layoutHook def
         , startupHook        = setDefaultCursor xC_left_ptr <+> startupHook def
         }
