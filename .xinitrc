@@ -7,6 +7,7 @@ xscreensaver &
 xsetroot -cursor_name left_ptr &
 
 compton --config /dev/null &
+pulseaudio --start &
 dunst -fn "$DUNST_FONT" -geometry "$DUNST_SIZE" &
 urxvtd -q -f &
 
