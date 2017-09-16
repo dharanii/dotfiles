@@ -36,10 +36,6 @@ data Wal = Wal
     , color15    :: String
     } deriving (Show, Eq)
 
-
-cacheWalColors :: FilePath
-cacheWalColors = ".cache/wal/colors"
-
 getWal :: FilePath -> IO (Maybe Wal)
 getWal path = do
     exists <- doesFileExist path
@@ -103,8 +99,6 @@ lemonbarPP wal = def
     , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
     , ppSep = mempty 
     , ppWsSep = " "
-    , ppLayout = \name ->
-        maybe name T.unpack $ T.stripPrefix "SpacingWithEdge 9 " $ T.pack name 
     , ppOrder = \(workspaces:layout:tile:[date,volume,inputMethod]) -> 
         let
             icon xs =
@@ -142,10 +136,11 @@ lemonbarPP wal = def
             [ date, volume, inputMethod ]
     }
 
+
 main :: IO ()
 main = do
     home <- getHomeDirectory
-    wal <- getWal $ home </> cacheWalColors
+    wal  <- getWal $ home </> ".cache/wal/colors"
 
     conf <- lemonbar wal $ def
         { terminal           = "urxvtc"
