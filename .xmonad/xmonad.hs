@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Text as T
@@ -5,8 +6,8 @@ import System.Directory (getHomeDirectory, doesFileExist)
 import System.FilePath ((</>))
 import XMonad
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, PP(..), wrap, pad, trim, shorten)
-import XMonad.Hooks.ManageDocks (avoidStruts)
-import XMonad.Layout.Gaps (gaps, Direction2D(..))
+import XMonad.Hooks.ManageDocks (AvoidStruts, avoidStruts, docks)
+import XMonad.Layout.LayoutModifier (ModifiedLayout(..))
 import XMonad.Layout.Spacing (spacingWithEdge)
 import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
 import XMonad.Util.Loggers (logCmd)
@@ -75,18 +76,28 @@ barFont = "-*-lemon-*"
 barIcon = "-*-siji-*"
 barHeight = 36
 
-lemonbar wal =
-    "lemonbar"
-        ++ " -d"
-        ++ " -g x" ++ show barHeight 
-        ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
-        ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
-        ++ " -n \"bar\""
-        ++ " -f \"" ++ barFont ++ "\""
-        ++ " -f \"" ++ barIcon ++ "\""
-        ++ " | /bin/bash"
+lemonbar :: LayoutClass l Window
+         => Maybe Wal -> XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
+lemonbar wal conf = do
+    h <- spawnPipe $
+            "lemonbar"
+                ++ " -d"
+                ++ " -g x" ++ show barHeight 
+                ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
+                ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
+                ++ " -n \"bar\""
+                ++ " -f \"" ++ barFont ++ "\""
+                ++ " -f \"" ++ barIcon ++ "\""
+                ++ " | /bin/bash"
+    return $ docks $ conf
+        { layoutHook = avoidStruts (layoutHook conf)
+        , logHook = do
+            logHook conf 
+            dynamicLogWithPP (lemonbarPP wal) { ppOutput = hPutStrLn h }
+        }
 
-logHook_ wal h = dynamicLogWithPP $ def
+lemonbarPP :: Maybe Wal -> PP
+lemonbarPP wal = def
     { ppCurrent         = pad
     , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 wal ++ "}") "%{F}" . pad
     , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
@@ -129,7 +140,6 @@ logHook_ wal h = dynamicLogWithPP $ def
                 logCmd "echo \"EN\""
         in
             [ date, volume, inputMethod ]
-    , ppOutput = hPutStrLn h
     }
 
 main :: IO ()
@@ -137,13 +147,12 @@ main = do
     home <- getHomeDirectory
     wal <- getWal $ home </> cacheWalColors
 
-    lemonbarHandle <- spawnPipe $ lemonbar wal
-
-    xmonad $ def
+    conf <- lemonbar wal $ def
         { terminal           = "urxvtc"
         , normalBorderColor  = maybe def background wal
         , focusedBorderColor = maybe def color1     wal
-        , layoutHook         = gaps [(U, barHeight)] $ spacingWithEdge 9 $ layoutHook def
-        , logHook            = logHook_ wal lemonbarHandle
+        , layoutHook         = spacingWithEdge 9 $ layoutHook def
         , startupHook        = setDefaultCursor xC_left_ptr <+> startupHook def
         }
+
+    xmonad conf
