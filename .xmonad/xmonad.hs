@@ -100,41 +100,49 @@ lemonbarPP wal = def
     , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
     , ppSep   = mempty 
     , ppWsSep = " "
-    , ppOrder = \(workspaces:layout:tile:[date,volume,inputMethod]) -> 
+    , ppOrder = \(workspaces:layout:tile:[date,wifi,volume,inputMethod]) -> 
         let
             icon xs =
                 "%{F" ++ maybe "#F0F0F0" color3 wal ++ "}" ++ xs ++ "%{F}"
-            tileIcon        = icon "\xE0B9"
-            layoutIcon      = icon "\xE005"
-            inputMethodIcon = icon "\xE26F" 
+            tileIcon   = icon "\xE0B9"
+            layoutIcon = icon "\xE005"
+            wifiIcon n
+                | n < 10    = icon "\xE218"
+                | n < 40    = icon "\xE218"
+                | n < 70    = icon "\xE219"
+                | otherwise = icon "\xE21A"
             volumeIcon n
-              | n < 10    = icon "\xE051"
-              | n < 40    = icon "\xE053"
-              | n < 70    = icon "\xE053"
-              | otherwise = icon "\xE152"
+                | n < 10    = icon "\xE051"
+                | n < 40    = icon "\xE053"
+                | n < 70    = icon "\xE053"
+                | otherwise = icon "\xE152"
+            inputMethodIcon = icon "\xE26F" 
+            
+            ws = wrap " " " " $ workspaces
+            tl = wrap " " " " $ unwords [ tileIcon, tile ]
+            dt = wrap " " " " $ date
+            ld = wrap " " " " $ unwords [ layoutIcon, layout ]
+            wf = if null wifi then mempty else 
+                 wrap " " " " $ unwords [ wifiIcon (read wifi), wifi ++ "%" ]
+            vl = wrap " " " " $ unwords [ volumeIcon (read volume), volume ++ "%" ]
+            im = wrap " " " " $ unwords [ inputMethodIcon, inputMethod ]
         in
-            [ "%{l}   " ++ workspaces 
-                ++ "  |  " 
-                ++ tileIcon ++ " " ++ tile
-            , "%{c}" ++ date
-            , "%{r}" 
-                ++ layoutIcon ++ " " ++ layout 
-                ++ "  |  "
-                ++ volumeIcon (read volume) ++ " " ++ volume ++ "%"
-                ++ "  "
-                ++ inputMethodIcon ++ " " ++ inputMethod
-                ++ "    "
+            [ mconcat [ "%{l}  ", ws, " | ", tl ]
+            , mconcat [ "%{c}", dt ]
+            , mconcat [ "%{r}", ld, " | ", wf, vl, im, "   " ]
             ]
     , ppExtras = 
         let
             date =
                 logCmd "date +\"%a %d %b - %l:%M %p\""
+            wifi =
+                logCmd "nmcli device wifi | grep -E \"^\\*[^[:digit:]]*[[:digit:]]\" | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
             volume = 
                 logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
             inputMethod =
                 logCmd "echo \"EN\""
         in
-            [ date, volume, inputMethod ]
+            [ date, wifi, volume, inputMethod ]
     }
 
 
