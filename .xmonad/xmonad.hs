@@ -98,7 +98,7 @@ lemonbarPP wal = def
     { ppCurrent         = pad
     , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 wal ++ "}") "%{F}" . pad
     , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
-    , ppSep = mempty 
+    , ppSep   = mempty 
     , ppWsSep = " "
     , ppOrder = \(workspaces:layout:tile:[date,volume,inputMethod]) -> 
         let
@@ -142,9 +142,10 @@ keys_ :: XConfig l -> M.Map (KeyMask, KeySym) (X ())
 keys_ conf@(XConfig {modMask = modm}) =
     M.fromList
         [ ((modm .|. shiftMask, xK_p), spawn "rof")
-        , ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
-        , ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
         , ((modm .|. shiftMask, xK_s), spawn "scr")
+        
+        --, ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
+        --, ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
         ]
 
 
@@ -157,7 +158,7 @@ main = do
         { terminal           = "urxvtc"
         , normalBorderColor  = maybe def background wal
         , focusedBorderColor = maybe def color1     wal
-        , keys               = \conf -> M.union (keys_ conf) (keys def $ conf)
+        , keys               = \conf -> M.union (keys_ conf) (keys def conf)
         , layoutHook         = spacingWithEdge 9 $ layoutHook def
         , startupHook        = setDefaultCursor xC_left_ptr <+> startupHook def
         }
