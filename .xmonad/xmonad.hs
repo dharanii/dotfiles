@@ -2,7 +2,7 @@
 
 import Control.Monad (void)
 import Data.Text as T
-import System.Directory (getHomeDirectory)
+import System.Directory (getHomeDirectory, doesFileExist)
 import System.FilePath ((</>))
 import System.Process (readProcess)
 import XMonad
@@ -16,28 +16,72 @@ import XMonad.Util.Loggers (logCmd)
 import XMonad.Util.Run (spawnPipe, hPutStrLn, runProcessWithInput)
 
 
-walColors :: FilePath
-walColors = ".cache/wal/colors"
+data Wal = Wal
+    { background :: String
+    , foreground :: String
+    , cursor     :: String
+    , color0     :: String
+    , color1     :: String
+    , color2     :: String
+    , color3     :: String
+    , color4     :: String
+    , color5     :: String
+    , color6     :: String
+    , color7     :: String
+    , color8     :: String
+    , color9     :: String
+    , color10    :: String
+    , color11    :: String
+    , color12    :: String
+    , color13    :: String
+    , color14    :: String
+    , color15    :: String
+    } deriving (Show, Eq)
 
-getWalColor :: Int -> FilePath -> IO (Maybe String)
-getWalColor n home =
-    runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", home </> walColors ] []
-        >>= \output ->
-            case T.unpack $ T.strip $ T.pack output of
-                [] ->
-                    return $ Nothing
-                hex ->
-                    return $ Just hex
+
+cacheWalColors :: FilePath
+cacheWalColors = ".cache/wal/colors"
+
+getWal :: FilePath -> IO (Maybe Wal)
+getWal path = do
+    exists <- doesFileExist path
+    if not exists then 
+       return $ Nothing
+    else do
+        colors <- traverse getWalColor [0..15]
+        return $ Just $ Wal
+            (colors !! 0)
+            (colors !! 7)
+            (colors !! 7)
+            (colors !! 0)
+            (colors !! 1)
+            (colors !! 2)
+            (colors !! 3)
+            (colors !! 4)
+            (colors !! 5)
+            (colors !! 6)
+            (colors !! 7)
+            (colors !! 8)
+            (colors !! 9)
+            (colors !! 10)
+            (colors !! 11)
+            (colors !! 12)
+            (colors !! 13)
+            (colors !! 14)
+            (colors !! 15)
+    where
+        getWalColor n = T.unpack . T.strip . T.pack 
+                    <$> runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
 
 
 barFont = "-*-lemon-*"
 barIcon = "-*-siji-*"
 barHeight = 36
 
-logHook_ h color3 color8 = dynamicLogWithPP $ def
+logHook_ h wal = dynamicLogWithPP $ def
     { ppCurrent         = pad
-    , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" id color3 ++ "}") "%{F}" . pad
-    , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" id color8 ++ "}") "%{F}" . pad
+    , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 wal ++ "}") "%{F}" . pad
+    , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
     , ppSep = mempty 
     , ppWsSep = " "
     , ppLayout = \name ->
@@ -45,7 +89,7 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
     , ppOrder = \(workspaces:layout:tile:[date,volume,inputMethod]) -> 
         let
             icon xs =
-                "%{F" ++ maybe "#F0F0F0" id color3 ++ "}" ++ xs ++ "%{F}"
+                "%{F" ++ maybe "#F0F0F0" color3 wal ++ "}" ++ xs ++ "%{F}"
             tileIcon = icon "\xE0B9"
             layoutIcon = icon "\xE005"
             inputMethodIcon = icon "\xE26F" 
@@ -82,19 +126,15 @@ logHook_ h color3 color8 = dynamicLogWithPP $ def
 
 main :: IO ()
 main = do
-    homeDir <- getHomeDirectory
-    color0  <- getWalColor  0 homeDir
-    color1  <- getWalColor  1 homeDir
-    color3  <- getWalColor  3 homeDir
-    color8  <- getWalColor  8 homeDir
-    color15 <- getWalColor 15 homeDir
+    home <- getHomeDirectory
+    wal <- getWal $ home </> cacheWalColors
 
     lemonbar <- spawnPipe $
         "lemonbar"
             ++ " -d"
             ++ " -g x" ++ show barHeight 
-            ++ " -B \"" ++ maybe "#000000" id color0  ++ "\"" 
-            ++ " -F \"" ++ maybe "#F0F0F0" id color15 ++ "\"" 
+            ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
+            ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
             ++ " -n \"bar\""
             ++ " -f \"" ++ barFont ++ "\""
             ++ " -f \"" ++ barIcon ++ "\""
@@ -103,9 +143,9 @@ main = do
     xmonad $ def
         { layoutHook = gaps [(U, barHeight)] $ spacingWithEdge 9 $ layoutHook def
         , terminal = "urxvtc"
-        , normalBorderColor = maybe def id color0
-        , focusedBorderColor = maybe def id color1
+        , normalBorderColor  = maybe def background wal
+        , focusedBorderColor = maybe def color1 wal
         , startupHook = setDefaultCursor xC_left_ptr <+> startupHook def
-        , logHook = logHook_ lemonbar color3 color8
+        , logHook = logHook_ lemonbar wal 
         --, manageHook = manageDocks <+> manageHook def
         }
