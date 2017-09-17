@@ -65,8 +65,8 @@ getWal path = do
                 (colors !! 14)
                 (colors !! 15)
     where
-        getWalColor n = 
-            trim <$> runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
+        getWalColor n = trim <$> 
+            runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
 
 
 barFont = "-*-lemon-*"
@@ -118,31 +118,26 @@ lemonbarPP wal = def
                 | otherwise = icon "\xE152"
             inputMethodIcon = icon "\xE26F" 
             
-            ws = wrap " " " " $ workspaces
-            tl = wrap " " " " $ unwords [ tileIcon, tile ]
-            dt = wrap " " " " $ date
-            ld = wrap " " " " $ unwords [ layoutIcon, layout ]
+            ws = pad $ workspaces
+            tl = pad $ unwords [ tileIcon, tile ]
+            dt = pad $ date
+            ld = pad $ unwords [ layoutIcon, layout ]
             wf = if null wifi then mempty else 
-                 wrap " " " " $ unwords [ wifiIcon (read wifi), wifi ++ "%" ]
-            vl = wrap " " " " $ unwords [ volumeIcon (read volume), volume ++ "%" ]
-            im = wrap " " " " $ unwords [ inputMethodIcon, inputMethod ]
+                 pad $ unwords [ wifiIcon (read wifi), wifi ++ "%" ]
+            vl = pad $ unwords [ volumeIcon (read volume), volume ++ "%" ]
+            im = pad $ unwords [ inputMethodIcon, inputMethod ]
         in
             [ mconcat [ "%{l}  ", ws, " | ", tl ]
             , mconcat [ "%{c}", dt ]
             , mconcat [ "%{r}", ld, " | ", wf, vl, im, "   " ]
             ]
     , ppExtras = 
-        let
-            date =
-                logCmd "date +\"%a %d %b - %l:%M %p\""
-            wifi = maybe (pure mempty) pure <$>
-                logCmd "nmcli device wifi | sed -n '/^*/p' | sed -n 2p | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
-            volume = 
-                logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
-            inputMethod =
-                logCmd "echo \"EN\""
-        in
-            [ date, wifi, volume, inputMethod ]
+        [ logCmd "date +\"%a %d %b - %l:%M %p\""
+        , logCmd "nmcli device wifi | sed -n '/^*/p' | sed -n 2p | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
+            >>= return . maybe (pure mempty) pure
+        , logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
+        , logCmd "echo \"EN\""
+        ]
     }
 
 
