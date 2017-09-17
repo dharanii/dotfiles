@@ -135,8 +135,8 @@ lemonbarPP wal = def
         let
             date =
                 logCmd "date +\"%a %d %b - %l:%M %p\""
-            wifi =
-                logCmd "nmcli device wifi | grep -E \"^\\*[^[:digit:]]*[[:digit:]]\" | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
+            wifi = maybe (pure mempty) pure <$>
+                logCmd "nmcli device wifi | sed -n '/^*/p' | sed -n 2p | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
             volume = 
                 logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
             inputMethod =
