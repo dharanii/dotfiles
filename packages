@@ -19,9 +19,10 @@ pulseaudio
 python-pywal
 python-setuptools
 rofi
-rxvt-unicode
+rxvt-unicode-wcwidthcallback
 siji-git
 stack
+ttf-freefont
 vim
 xf86-video-intel
 xmonad
