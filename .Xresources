@@ -1,4 +1,4 @@
-! Dylans Xresources
+! Xresources
 
 ! URxvt*font: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
 ! URxvt*boldFont: -benis-lemon-medium-r-normal--10-110-75-75-m-50-ISO10646-1
@@ -23,3 +23,15 @@ URxvt.iso14755_52: false
 URxvt.perl-ext-common: default,clipboard
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+
+Xmessage*font: -*-lemon-*
+Xmessage*background: #1C1616
+Xmessage*foreground: #E5E3DC
+Xmessage*form.*.shapeStyle: rectangle
+Xmessage*Scrollbar.width: 1
+Xmessage*Scrollbar.borderWidth: 0
+Xmessage*Buttons: OK
+Xmessage*defaultButton: OK
+Xmessage*baseTranslations:#augment\
+  <Key>Return:exit()\n\
+  <Key>q:exit()

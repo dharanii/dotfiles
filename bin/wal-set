@@ -20,12 +20,21 @@ reload_dunst() {
         -geometry "${DUNST_SIZE:-300x30-40+70}" &
 }
 
+reload_xresources() {
+    sed -i"" \
+        -e "s/Xmessage\*background: #.*/Xmessage\*background: ${color0:-#FFFFFF}/" \
+        -e "s/Xmessage\*foreground: #.*/Xmessage\*foreground: ${color7:-#000000}/" \
+        "${HOME}/dotfiles/.Xresources"
+    xrdb -merge "${HOME}/dotfiles/.Xresources"
+}
+
 set_scss() {
     sassc --style expanded "${HOME}/projects/startpage/scss/style.scss" > "${HOME}/projects/startpage/style.css"
 }
 
 main() {
     reload_dunst &
+    reload_xresources &
     # set_scss &
 }
 
