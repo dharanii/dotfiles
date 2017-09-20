@@ -23,8 +23,11 @@ init:
 		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	
 	wal -i "${HOME}/Pictures/Wallpapers"
-
-	sed -e 's/mozc:False/mozc:True/' "${HOME}/.config/fcitx/profile"
+	
+	sudo sed -e 's/#ja_JP.UTF-8/ja_JP.UTF-8/' /etc/locale.gen
+	sudo locale-gen
+	sed -e 's/#IMName=/IMName=mozc/' -e 's/mozc:False/mozc:True/' "${HOME}/.config/fcitx/profile"
+	fcitx-remote -r
 
 .PHONY: update
 update:
