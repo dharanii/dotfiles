@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns      #-}
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -43,7 +44,7 @@ getWal path = do
     if not exists then 
        return $ Nothing
     else do
-        colors <- traverse getWalColor [0..15]
+        !colors <- lines <$> readFile path
         return $ Just $ 
             Wal (colors !! 0)
                 (colors !! 7)
@@ -64,9 +65,6 @@ getWal path = do
                 (colors !! 13)
                 (colors !! 14)
                 (colors !! 15)
-    where
-        getWalColor n = trim <$> 
-            runProcessWithInput "/bin/sed" [ "-n", show (n +1) ++ "p", path ] []
 
 
 barFont = "-*-lemon-*"
