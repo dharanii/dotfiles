@@ -24,6 +24,8 @@ init:
 	
 	wal -i "${HOME}/Pictures/Wallpapers"
 
+	sed -e 's/mozc:False/mozc:True/' "${HOME}/.config/fcitx/profile"
+
 .PHONY: update
 update:
 	git pull origin master

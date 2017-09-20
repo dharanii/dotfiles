@@ -1,3 +1,10 @@
+.config/fcitx/clipboard
+.config/fcitx/conf
+.config/fcitx/data
+.config/fcitx/dbus
+.config/fcitx/log
+.config/fcitx/cached_layout
+.config/fcitx/profile
 .config/pulse
 .xmonad/xmonad-x86_64-linux
 .xmonad/xmonad.errors

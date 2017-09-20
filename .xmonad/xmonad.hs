@@ -125,7 +125,8 @@ lemonbarPP wal = def
             wf = if null wifi then mempty else 
                  pad $ unwords [ wifiIcon (read wifi), wifi ++ "%" ]
             vl = pad $ unwords [ volumeIcon (read volume), volume ++ "%" ]
-            im = pad $ unwords [ inputMethodIcon, inputMethod ]
+            im = if null inputMethod then mempty else
+                 pad $ unwords [ inputMethodIcon, inputMethod ]
         in
             [ mconcat [ "%{l}  ", ws, " | ", tl ]
             , mconcat [ "%{c}", dt ]
@@ -136,7 +137,11 @@ lemonbarPP wal = def
         , logCmd "nmcli device wifi | sed -n '/^*/p' | sed -n 2p | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
             >>= return . maybe (pure mempty) pure
         , logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
-        , logCmd "echo \"EN\""
+        , logCmd "fcitx-remote" >>= \str -> return $ do
+            case str of
+              Just "1" -> Just "US"
+              Just "2" -> Just "JP"
+              _        -> Just mempty
         ]
     }
 
@@ -149,6 +154,7 @@ keys_ conf@(XConfig {modMask = modm}) =
         
         --, ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
         --, ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
+        , ((modm .|. shiftMask, xK_space), spawn "fcitx-remote -t" >> windows id)
         ]
 
 

@@ -3,6 +3,11 @@
 export DUNST_FONT='Artwiz Lemon 7'
 export DUNST_SIZE='300x30-40+70'
 
+export GTK_IM_MODULE='fcitx'
+export QT_IM_MODULE='fcitx'
+export XMODIFIERS=@im='fcitx'
+fcitx-autostart &
+
 xscreensaver &
 xsetroot -cursor_name left_ptr &
 
