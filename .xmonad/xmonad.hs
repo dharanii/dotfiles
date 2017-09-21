@@ -152,7 +152,7 @@ keys_ conf@(XConfig {modMask = modm}) =
         
         --, ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
         --, ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
-        , ((modm .|. shiftMask, xK_space), spawn "fcitx-remote -t" >> windows id)
+        , ((controlMask, xK_space), spawn "fcitx-remote -t" >> windows id)
 
         , ((modm .|. shiftMask, xK_slash), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
         ]
