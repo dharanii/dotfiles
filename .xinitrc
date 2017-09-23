@@ -17,6 +17,6 @@ wal -R -o wal-set
 
 xrdb -merge "${HOME}/.Xresources" &
 xsetroot -cursor_name left_ptr &
-xautolock -time 3 -locker lock &
+xautolock -time 3 -locker loc &
 
 exec xmonad 

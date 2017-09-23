@@ -154,7 +154,7 @@ keys_ conf@(XConfig {modMask = modm}) =
         --, ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
         , ((controlMask, xK_space), spawn "fcitx-remote -t" >> windows id)
         --, ((noModMask, stringToKeysym "<XF86PowerOff>"), spawn "systemctl poweroff")
-        --, ((noModMask, stringToKeysym "<XF86Sleep>"   ), spawn "lock && systemctl suspend")
+        --, ((noModMask, stringToKeysym "<XF86Sleep>"   ), spawn "loc && systemctl suspend")
 
         , ((modm .|. shiftMask, xK_slash), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
         ]
