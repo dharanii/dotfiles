@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+import Control.Monad (guard)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import System.Directory (getHomeDirectory, doesFileExist)
@@ -12,11 +13,11 @@ import XMonad.Hooks.ManageDocks (AvoidStruts, avoidStruts, docks)
 import XMonad.Layout.LayoutModifier (ModifiedLayout(..))
 import XMonad.Layout.Spacing (spacingWithEdge)
 import XMonad.Util.Cursor (setDefaultCursor, xC_left_ptr)
-import XMonad.Util.Loggers (logCmd)
-import XMonad.Util.Run (spawnPipe, hPutStrLn, runProcessWithInput)
+import XMonad.Util.Loggers (Logger,logCmd)
+import XMonad.Util.Run (spawnPipe, hPutStrLn)
 
 
-data Wal = Wal
+data ColorScheme = ColorScheme
     { background :: String
     , foreground :: String
     , cursor     :: String
@@ -38,33 +39,36 @@ data Wal = Wal
     , color15    :: String
     } deriving (Show, Eq)
 
-getWal :: FilePath -> IO (Maybe Wal)
-getWal path = do
+getColorScheme :: FilePath -> IO (Maybe ColorScheme)
+getColorScheme path = do
     exists <- doesFileExist path
     if not exists then 
         return $ Nothing
     else do
         !colors <- lines <$> readFile path
-        return $ Just $ 
-            Wal (colors !! 0)
-                (colors !! 7)
-                (colors !! 7)
-                (colors !! 0)
-                (colors !! 1)
-                (colors !! 2)
-                (colors !! 3)
-                (colors !! 4)
-                (colors !! 5)
-                (colors !! 6)
-                (colors !! 7)
-                (colors !! 8)
-                (colors !! 9)
-                (colors !! 10)
-                (colors !! 11)
-                (colors !! 12)
-                (colors !! 13)
-                (colors !! 14)
-                (colors !! 15)
+        return $ ColorScheme 
+            <$> colors !? 0
+            <*> colors !? 7
+            <*> colors !? 7
+            <*> colors !? 0
+            <*> colors !? 1
+            <*> colors !? 2
+            <*> colors !? 3
+            <*> colors !? 4
+            <*> colors !? 5
+            <*> colors !? 6
+            <*> colors !? 7
+            <*> colors !? 8
+            <*> colors !? 9
+            <*> colors !? 10
+            <*> colors !? 11
+            <*> colors !? 12
+            <*> colors !? 13
+            <*> colors !? 14
+            <*> colors !? 15
+
+(!?) :: [a] -> Int -> Maybe a
+xs !? n = xs !! n <$ guard (n < length xs)
 
 
 barFont = "-*-lemon-*"
@@ -72,36 +76,34 @@ barIcon = "-*-siji-*"
 barHeight = 36
 
 lemonbar :: LayoutClass l Window
-         => Maybe Wal -> XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
-lemonbar wal conf = do
-    h <- spawnPipe $
-            "lemonbar"
-                ++ " -d"
-                ++ " -g x" ++ show barHeight 
-                ++ " -B \"" ++ maybe "#000000" color0  wal ++ "\"" 
-                ++ " -F \"" ++ maybe "#F0F0F0" color15 wal ++ "\"" 
-                ++ " -n \"bar\""
-                ++ " -f \"" ++ barFont ++ "\""
-                ++ " -f \"" ++ barIcon ++ "\""
-                ++ " | /bin/bash"
+         => Maybe ColorScheme -> XConfig l -> IO (XConfig (ModifiedLayout AvoidStruts l))
+lemonbar colorscheme conf = do
+    h <- spawnPipe $ "lemonbar " ++ unwords
+            [ "-d"
+            , "-g", "x" ++ show barHeight 
+            , "-B", wrap "\"" "\"" (maybe "#000000" color0  colorscheme)
+            , "-F", wrap "\"" "\"" (maybe "#F0F0F0" color15 colorscheme)
+            , "-n", wrap "\"" "\"" "bar"
+            , "-f", wrap "\"" "\"" barFont
+            , "-f", wrap "\"" "\"" barIcon
+            ]
     return $ docks $ conf
         { layoutHook = avoidStruts (layoutHook conf)
         , logHook = do
             logHook conf 
-            dynamicLogWithPP (lemonbarPP wal) { ppOutput = hPutStrLn h }
+            dynamicLogWithPP (lemonbarPP colorscheme) { ppOutput = hPutStrLn h }
         }
 
-lemonbarPP :: Maybe Wal -> PP
-lemonbarPP wal = def
+lemonbarPP :: Maybe ColorScheme -> PP
+lemonbarPP colorscheme = def
     { ppCurrent         = pad
-    , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 wal ++ "}") "%{F}" . pad
-    , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 wal ++ "}") "%{F}" . pad
+    , ppHidden          = wrap ("%{F" ++ maybe "#F0F0F0" color3 colorscheme ++ "}") "%{F}" . pad
+    , ppHiddenNoWindows = wrap ("%{F" ++ maybe "#F0F0F0" color8 colorscheme ++ "}") "%{F}" . pad
     , ppSep   = mempty 
     , ppWsSep = " "
     , ppOrder = \(workspaces:layout:tile:[date,wifi,volume,inputMethod]) -> 
         let
-            icon xs =
-                "%{F" ++ maybe "#F0F0F0" color3 wal ++ "}" ++ xs ++ "%{F}"
+            icon = wrap ("%{F" ++ maybe "#F0F0F0" color3 colorscheme ++ "}") "%{F}"
             tileIcon   = icon "\xE0B9"
             layoutIcon = icon "\xE005"
             wifiIcon n
@@ -130,22 +132,22 @@ lemonbarPP wal = def
             , mconcat [ "%{c}", dt ]
             , mconcat [ "%{r}", ld, " | ", wf, vl, im, "   " ]
             ]
-    , ppExtras = 
-        [ logCmd "date +\"%a %d %b - %l:%M %p\""
-        , logCmd "nmcli device wifi | sed -n '/^*/p' | sed -n 2p | awk '{ print $7 }' | sed -e 's/[^0-9]//g'"
-            >>= return . maybe (pure mempty) pure
-        , logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
-        , logCmd "fcitx-remote" >>= \str -> return $ do
-            case str of
-              Just "1" -> Just "US"
-              Just "2" -> Just "JP"
-              _        -> Just mempty
-        ]
+    , ppExtras = [ date, wifi, volume, inputMethod ]
     }
 
+date, wifi, volume, inputMethod :: Logger
+date = logCmd "date +\"%a %d %b - %l:%M %p\""
+wifi = go <$> logCmd "nmcli device wifi | grep '*' | awk 'NR==2{ print $7 }' | sed -e 's/[^0-9]//g'" where
+    go = maybe (pure mempty) pure
+volume = logCmd "amixer sget Master | grep -o -m 1 -E \"[[:digit:]]+%\" | sed -e 's/[^0-9]//g'"
+inputMethod = go <$> logCmd "fcitx-remote" where
+    go (Just "1") = Just "US"
+    go (Just "2") = Just "JP"
+    go _          = Just mempty
 
-keys_ :: XConfig l -> M.Map (KeyMask, KeySym) (X ())
-keys_ conf@(XConfig {modMask = modm}) =
+
+customKeys :: XConfig l -> M.Map (KeyMask, KeySym) (X ())
+customKeys conf@(XConfig {modMask = modm}) =
     M.fromList
         [ ((modm .|. shiftMask, xK_p), spawn "rof")
         , ((modm .|. shiftMask, xK_s), spawn "scr")
@@ -162,14 +164,14 @@ keys_ conf@(XConfig {modMask = modm}) =
 
 main :: IO ()
 main = do
-    home <- getHomeDirectory
-    wal  <- getWal $ home </> ".cache/wal/colors"
+    home        <- getHomeDirectory
+    colorscheme <- getColorScheme $ home </> ".cache/wal/colors"
 
-    conf <- lemonbar wal $ def
+    conf <- lemonbar colorscheme $ def
         { terminal           = "urxvtc"
-        , normalBorderColor  = maybe def background wal
-        , focusedBorderColor = maybe def color1     wal
-        , keys               = \conf -> M.union (keys_ conf) (keys def conf)
+        , normalBorderColor  = maybe def background colorscheme
+        , focusedBorderColor = maybe def color1     colorscheme
+        , keys               = \conf -> M.union (customKeys conf) (keys def conf)
         , layoutHook         = spacingWithEdge 9 $ layoutHook def
         , startupHook        = setDefaultCursor xC_left_ptr <+> startupHook def
         }
