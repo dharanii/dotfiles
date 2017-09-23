@@ -8,8 +8,8 @@ export QT_IM_MODULE='fcitx'
 export XMODIFIERS=@im='fcitx'
 fcitx-autostart &
 
-xscreensaver &
 xsetroot -cursor_name left_ptr &
+xautolock -time 3 -locker lock &
 
 compton --config /dev/null &
 pulseaudio --start &

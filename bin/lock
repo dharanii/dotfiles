@@ -1,0 +1,11 @@
+#!/bin/bash
+
+scr="/tmp/screen.png"
+resolution="$(xdpyinfo | awk '/dimensions:/ {printf $2}')"
+import -window root -gravity north -crop "${resolution:-1920x1080}+0+0" "$scr" && \
+  convert "$scr" -paint 5 "$scr" &
+wait
+
+LC_ALL=C i3lock -u -i "$scr"
+
+rm /tmp/screen.png

@@ -42,7 +42,7 @@ getWal :: FilePath -> IO (Maybe Wal)
 getWal path = do
     exists <- doesFileExist path
     if not exists then 
-       return $ Nothing
+        return $ Nothing
     else do
         !colors <- lines <$> readFile path
         return $ Just $ 
@@ -153,6 +153,8 @@ keys_ conf@(XConfig {modMask = modm}) =
         --, ((noModMask, stringToKeysym "<XF86AudioLowerVolume>"), spawn "vol down")
         --, ((noModMask, stringToKeysym "<XF86AudioRaiseVolume>"), spawn "vol up")
         , ((controlMask, xK_space), spawn "fcitx-remote -t" >> windows id)
+        --, ((noModMask, stringToKeysym "<XF86PowerOff>"), spawn "systemctl poweroff")
+        --, ((noModMask, stringToKeysym "<XF86Sleep>"   ), spawn "lock && systemctl suspend")
 
         , ((modm .|. shiftMask, xK_slash), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
         ]

@@ -10,6 +10,7 @@ firefox
 firefox-i18n-ja
 git
 grub
+i3lock
 imagemagick
 intel-ucode
 lemonbar-git
@@ -25,10 +26,12 @@ siji-git
 stack
 ttf-freefont
 vim
+xautolock
 xf86-video-intel
 xmonad
 xmonad-contrib
 xorg-server
+xorg-xdpyinfo
 xorg-xinit
 xorg-xmessage
 yaourt
