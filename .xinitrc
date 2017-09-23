@@ -6,17 +6,17 @@ export DUNST_SIZE='300x30-40+70'
 export GTK_IM_MODULE='fcitx'
 export QT_IM_MODULE='fcitx'
 export XMODIFIERS=@im='fcitx'
-fcitx-autostart &
-
-xsetroot -cursor_name left_ptr &
-xautolock -time 3 -locker lock &
 
 compton --config /dev/null &
 pulseaudio --start &
+fcitx-autostart &
 dunst -fn "$DUNST_FONT" -geometry "$DUNST_SIZE" &
 urxvtd -q -f &
 
-xrdb -merge -I$HOME ~/.Xresources
 wal -R -o wal-set
+
+xrdb -merge "${HOME}/.Xresources" &
+xsetroot -cursor_name left_ptr &
+xautolock -time 3 -locker lock &
 
 exec xmonad 

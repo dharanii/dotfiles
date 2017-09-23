@@ -20,12 +20,11 @@ reload_dunst() {
         -geometry "${DUNST_SIZE:-300x30-40+70}" &
 }
 
-reload_xresources() {
+set_xresources() {
     sed -i"" \
-        -e "s/Xmessage\*background: #.*/Xmessage\*background: ${color0:-#FFFFFF}/" \
+        -e "s/Xmessage\*background: #.*/Xmessage\*background: ${color0:-#F0F0F0}/" \
         -e "s/Xmessage\*foreground: #.*/Xmessage\*foreground: ${color7:-#000000}/" \
-        "${HOME}/dotfiles/.Xresources"
-    xrdb -merge "${HOME}/dotfiles/.Xresources"
+        "${HOME}/.Xresources"
 }
 
 set_scss() {
@@ -34,7 +33,7 @@ set_scss() {
 
 main() {
     reload_dunst &
-    reload_xresources &
+    set_xresources &
     # set_scss &
 }
 
