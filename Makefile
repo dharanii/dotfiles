@@ -13,7 +13,7 @@ deploy:
 init:
 	# @$(foreach val, $(wildcard ./etc/init/*.sh), bash $(val);)
 	yaourt -Syua --noconfirm
-	yaourt -S --needed --noconfirm `cat packages`
+	yaourt -S --needed `cat packages`
 	
 	mkdir -p "${HOME}/Pictures/Wallpapers"
 	curl -o "${HOME}/Pictures/Wallpapers/graffiti.jpg" \
@@ -26,8 +26,10 @@ init:
 	
 	sudo sed -i -e 's/#ja_JP.UTF-8/ja_JP.UTF-8/' /etc/locale.gen
 	sudo locale-gen
-	sed -i -e 's/#IMName=/IMName=mozc/' -e 's/mozc:False/mozc:True/' "${HOME}/.config/fcitx/profile"
-	fcitx-remote -r
+
+	## following commands need to be executed after activating X
+	# sed -i -e 's/#IMName=/IMName=mozc/' -e 's/mozc:False/mozc:True/' "${HOME}/.config/fcitx/profile"
+	# fcitx-remote -r
 
 .PHONY: update
 update:
